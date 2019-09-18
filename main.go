@@ -40,6 +40,11 @@ func createTLSConfiguration() (t *tls.Config) {
 	t = &tls.Config{
 		InsecureSkipVerify: *verifySSL,
 	}
+
+	fmt.Println("certFile: ", *certFile)
+	fmt.Println("keyFile: ", *keyFile)
+	fmt.Println("caFile: ", *caFile)
+
 	if *certFile != "" && *keyFile != "" && *caFile != "" {
 		cert, err := tls.LoadX509KeyPair(*certFile, *keyFile)
 		if err != nil {
@@ -75,7 +80,7 @@ func main() {
 	conf.Producer.Retry.Max = 1
 	conf.Producer.RequiredAcks = sarama.WaitForAll
 	conf.Producer.Return.Successes = true
-	conf.Metadata.Full = true
+	// conf.Metadata.Full = true
 	// conf.Version = sarama.V0_10_0_0
 	conf.Version = sarama.V2_3_0_0
 
@@ -83,6 +88,7 @@ func main() {
 	fmt.Println("SASL algorithm: ", *algorithm)
 	fmt.Println("verifySSL: ", *verifySSL)
 	fmt.Println("TLS: ", *useTLS)
+
 	if *useSASL {
 		if *userName == "" {
 			log.Fatalln("SASL username is required")
@@ -105,7 +111,7 @@ func main() {
 			conf.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient { return &XDGSCRAMClient{HashGeneratorFcn: SHA256} }
 			conf.Net.SASL.Mechanism = sarama.SASLMechanism(sarama.SASLTypeSCRAMSHA256)
 		} else if *algorithm == "plain" {
-			conf.Net.SASL.Handshake = false
+			// conf.Net.SASL.Handshake = false
 			conf.Net.SASL.Mechanism = sarama.SASLTypePlaintext
 		} else {
 			log.Fatalf("invalid SHA algorithm \"%s\": can be either \"sha256\" or \"sha512\"", *algorithm)
@@ -117,10 +123,8 @@ func main() {
 		conf.Net.TLS.Config = createTLSConfiguration()
 	}
 
-	fmt.Println("SASL config: ", conf.Net.SASL)
-	fmt.Println("TLS config: ", conf.Net.TLS)
-	fmt.Println("verify: ", *verifySSL)
-	fmt.Println("Use TLS: ", *useTLS)
+	fmt.Printf("SASL config: %+v\n", conf.Net.SASL)
+	fmt.Printf("TLS config: %+v\n", conf.Net.TLS)
 
 	if *mode == "consume" {
 		consumer, err := sarama.NewConsumer(splitBrokers, conf)

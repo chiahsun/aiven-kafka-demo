@@ -21,3 +21,13 @@ make run-sasl-plain
 It works with SASL authentication but fails to get metadata to broker.
 
 Please see `sasl-plain.log`
+
+
+# Note
+
+You need to enable `kafka_authentication_methods.sasl` under `Overview` > `Advanced configuration`.
+
+The SASL authentication service URI is different from the original client certificate service URI.
+
+![Enable SASL](./images/sasl1.png)
+![Use SASL service URI](./images/sasl2.png)
