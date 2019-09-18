@@ -22,7 +22,7 @@ var (
 	brokers   = flag.String("brokers", os.Getenv("KAFKA_PEERS"), "The Kafka brokers to connect to, as a comma separated list")
 	userName  = flag.String("username", "", "The SASL username")
 	passwd    = flag.String("passwd", "", "The SASL password")
-	algorithm = flag.String("algorithm", "", "The SASL SCRAM SHA algorithm sha256 or sha512 as mechanism")
+	algorithm = flag.String("algorithm", "", "The SASL SCRAM SHA algorithm sha256 or sha512 or plain as mechanism")
 	topic     = flag.String("topic", "default_topic", "The Kafka topic to use")
 	certFile  = flag.String("certificate", "", "The optional certificate file for client authentication")
 	keyFile   = flag.String("key", "", "The optional key file for client authentication")
@@ -76,9 +76,13 @@ func main() {
 	conf.Producer.RequiredAcks = sarama.WaitForAll
 	conf.Producer.Return.Successes = true
 	conf.Metadata.Full = true
-	conf.Version = sarama.V0_10_0_0
+	// conf.Version = sarama.V0_10_0_0
+	conf.Version = sarama.V2_3_0_0
 
 	fmt.Println("Use SASL: ", *useSASL)
+	fmt.Println("SASL algorithm: ", *algorithm)
+	fmt.Println("verifySSL: ", *verifySSL)
+	fmt.Println("TLS: ", *useTLS)
 	if *useSASL {
 		if *userName == "" {
 			log.Fatalln("SASL username is required")
@@ -100,7 +104,9 @@ func main() {
 		} else if *algorithm == "sha256" {
 			conf.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient { return &XDGSCRAMClient{HashGeneratorFcn: SHA256} }
 			conf.Net.SASL.Mechanism = sarama.SASLMechanism(sarama.SASLTypeSCRAMSHA256)
-
+		} else if *algorithm == "plain" {
+			conf.Net.SASL.Handshake = false
+			conf.Net.SASL.Mechanism = sarama.SASLTypePlaintext
 		} else {
 			log.Fatalf("invalid SHA algorithm \"%s\": can be either \"sha256\" or \"sha512\"", *algorithm)
 		}
@@ -110,6 +116,11 @@ func main() {
 		conf.Net.TLS.Enable = true
 		conf.Net.TLS.Config = createTLSConfiguration()
 	}
+
+	fmt.Println("SASL config: ", conf.Net.SASL)
+	fmt.Println("TLS config: ", conf.Net.TLS)
+	fmt.Println("verify: ", *verifySSL)
+	fmt.Println("Use TLS: ", *useTLS)
 
 	if *mode == "consume" {
 		consumer, err := sarama.NewConsumer(splitBrokers, conf)
