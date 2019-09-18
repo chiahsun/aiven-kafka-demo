@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -28,6 +29,7 @@ var (
 	caFile    = flag.String("ca", "", "The optional certificate authority file for TLS client authentication")
 	verifySSL = flag.Bool("verify", false, "Optional verify ssl certificates chain")
 	useTLS    = flag.Bool("tls", false, "Use TLS to communicate with the cluster")
+	useSASL   = flag.Bool("sasl", false, "Use SASL for authentication")
 	mode      = flag.String("mode", "produce", "Mode to run in: \"produce\" to produce, \"consume\" to consume")
 	logMsg    = flag.Bool("logmsg", false, "True to log consumed messages to console")
 
@@ -69,35 +71,39 @@ func main() {
 	}
 	splitBrokers := strings.Split(*brokers, ",")
 
-	if *userName == "" {
-		log.Fatalln("SASL username is required")
-	}
-
-	if *passwd == "" {
-		log.Fatalln("SASL password is required")
-	}
-
 	conf := sarama.NewConfig()
 	conf.Producer.Retry.Max = 1
 	conf.Producer.RequiredAcks = sarama.WaitForAll
 	conf.Producer.Return.Successes = true
 	conf.Metadata.Full = true
 	conf.Version = sarama.V0_10_0_0
-	conf.ClientID = "sasl_scram_client"
-	conf.Metadata.Full = true
-	conf.Net.SASL.Enable = true
-	conf.Net.SASL.User = *userName
-	conf.Net.SASL.Password = *passwd
-	conf.Net.SASL.Handshake = true
-	if *algorithm == "sha512" {
-		conf.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient { return &XDGSCRAMClient{HashGeneratorFcn: SHA512} }
-		conf.Net.SASL.Mechanism = sarama.SASLMechanism(sarama.SASLTypeSCRAMSHA512)
-	} else if *algorithm == "sha256" {
-		conf.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient { return &XDGSCRAMClient{HashGeneratorFcn: SHA256} }
-		conf.Net.SASL.Mechanism = sarama.SASLMechanism(sarama.SASLTypeSCRAMSHA256)
 
-	} else {
-		log.Fatalf("invalid SHA algorithm \"%s\": can be either \"sha256\" or \"sha512\"", *algorithm)
+	fmt.Println("Use SASL: ", *useSASL)
+	if *useSASL {
+		if *userName == "" {
+			log.Fatalln("SASL username is required")
+		}
+
+		if *passwd == "" {
+			log.Fatalln("SASL password is required")
+		}
+
+		conf.ClientID = "sasl_scram_client"
+		conf.Metadata.Full = true
+		conf.Net.SASL.Enable = true
+		conf.Net.SASL.User = *userName
+		conf.Net.SASL.Password = *passwd
+		conf.Net.SASL.Handshake = true
+		if *algorithm == "sha512" {
+			conf.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient { return &XDGSCRAMClient{HashGeneratorFcn: SHA512} }
+			conf.Net.SASL.Mechanism = sarama.SASLMechanism(sarama.SASLTypeSCRAMSHA512)
+		} else if *algorithm == "sha256" {
+			conf.Net.SASL.SCRAMClientGeneratorFunc = func() sarama.SCRAMClient { return &XDGSCRAMClient{HashGeneratorFcn: SHA256} }
+			conf.Net.SASL.Mechanism = sarama.SASLMechanism(sarama.SASLTypeSCRAMSHA256)
+
+		} else {
+			log.Fatalf("invalid SHA algorithm \"%s\": can be either \"sha256\" or \"sha512\"", *algorithm)
+		}
 	}
 
 	if *useTLS {
@@ -117,7 +123,7 @@ func main() {
 			}
 		}()
 		log.Println("commence consuming")
-		partitionConsumer, err := consumer.ConsumePartition(*topic, 0, sarama.OffsetOldest)
+		partitionConsumer, err := consumer.ConsumePartition(*topic, 2, sarama.OffsetOldest)
 		if err != nil {
 			panic(err)
 		}
