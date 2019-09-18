@@ -1,0 +1,39 @@
+make run-sasl-sha256                                                       2 ↵
+go run main.go scram_client.go -brokers kafka-126f65ba-chiahsun-7adf.aivencloud.com:16014 -username avnadmin -passwd jpm5joa17pb5sgwj -algorithm sha256 -topic partition-3 -certificate avnadmin.cert -key avnadmin.key -ca ca.pem -mode consume -logmsg -verify -tls -sasl
+Use SASL:  true
+[Sarama] 2019/09/18 13:43:43 Initializing new client
+[Sarama] 2019/09/18 13:43:43 client/metadata fetching metadata for all topics from broker kafka-126f65ba-chiahsun-7adf.aivencloud.com:16014
+[Sarama] 2019/09/18 13:43:43 Invalid SASL Mechanism : kafka server: Request is not valid given the current SASL state.
+[Sarama] 2019/09/18 13:43:43 Closed connection to broker kafka-126f65ba-chiahsun-7adf.aivencloud.com:16014
+[Sarama] 2019/09/18 13:43:43 client/metadata got error from broker -1 while fetching metadata: kafka server: Request is not valid given the current SASL state.
+[Sarama] 2019/09/18 13:43:43 client/metadata no available broker to send metadata request to
+[Sarama] 2019/09/18 13:43:43 client/brokers resurrecting 1 dead seed brokers
+[Sarama] 2019/09/18 13:43:43 client/metadata retrying after 250ms... (3 attempts remaining)
+[Sarama] 2019/09/18 13:43:44 client/metadata fetching metadata for all topics from broker kafka-126f65ba-chiahsun-7adf.aivencloud.com:16014
+[Sarama] 2019/09/18 13:43:44 Invalid SASL Mechanism : kafka server: Request is not valid given the current SASL state.
+[Sarama] 2019/09/18 13:43:44 Closed connection to broker kafka-126f65ba-chiahsun-7adf.aivencloud.com:16014
+[Sarama] 2019/09/18 13:43:44 client/metadata got error from broker -1 while fetching metadata: kafka server: Request is not valid given the current SASL state.
+[Sarama] 2019/09/18 13:43:44 client/metadata no available broker to send metadata request to
+[Sarama] 2019/09/18 13:43:44 client/brokers resurrecting 1 dead seed brokers
+[Sarama] 2019/09/18 13:43:44 client/metadata retrying after 250ms... (2 attempts remaining)
+[Sarama] 2019/09/18 13:43:44 client/metadata fetching metadata for all topics from broker kafka-126f65ba-chiahsun-7adf.aivencloud.com:16014
+[Sarama] 2019/09/18 13:43:44 Invalid SASL Mechanism : kafka server: Request is not valid given the current SASL state.
+[Sarama] 2019/09/18 13:43:44 Closed connection to broker kafka-126f65ba-chiahsun-7adf.aivencloud.com:16014
+[Sarama] 2019/09/18 13:43:44 client/metadata got error from broker -1 while fetching metadata: kafka server: Request is not valid given the current SASL state.
+[Sarama] 2019/09/18 13:43:44 client/metadata no available broker to send metadata request to
+[Sarama] 2019/09/18 13:43:44 client/brokers resurrecting 1 dead seed brokers
+[Sarama] 2019/09/18 13:43:44 client/metadata retrying after 250ms... (1 attempts remaining)
+[Sarama] 2019/09/18 13:43:44 client/metadata fetching metadata for all topics from broker kafka-126f65ba-chiahsun-7adf.aivencloud.com:16014
+[Sarama] 2019/09/18 13:43:44 Invalid SASL Mechanism : kafka server: Request is not valid given the current SASL state.
+[Sarama] 2019/09/18 13:43:44 Closed connection to broker kafka-126f65ba-chiahsun-7adf.aivencloud.com:16014
+[Sarama] 2019/09/18 13:43:44 client/metadata got error from broker -1 while fetching metadata: kafka server: Request is not valid given the current SASL state.
+[Sarama] 2019/09/18 13:43:44 client/metadata no available broker to send metadata request to
+[Sarama] 2019/09/18 13:43:44 client/brokers resurrecting 1 dead seed brokers
+[Sarama] 2019/09/18 13:43:44 Closing Client
+panic: kafka: client has run out of available brokers to talk to (Is your cluster reachable?)
+
+goroutine 1 [running]:
+main.main()
+	/Users/chiahsun/git/aiven-kafka-demo/main.go:117 +0xf5c
+exit status 2
+make: *** [run-sasl-sha256] Error 1
