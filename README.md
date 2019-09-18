@@ -10,7 +10,6 @@ The client is modified from [sarama sasl sram client](https://github.com/Shopify
 make run-without-sasl
 ```
 
-It works!
 
 ## Run with SASL PLAIN
 
@@ -18,9 +17,17 @@ It works!
 make run-sasl-plain
 ```
 
-It works with SASL authentication but fails to get metadata to broker.
+## Run with SASL SHA-256
 
-Please see `sasl-plain.log`
+```
+make run-sasl-sha256
+```
+
+## Run with SASL SHA-512
+
+```
+make run-sasl-sha512
+```
 
 
 # Note

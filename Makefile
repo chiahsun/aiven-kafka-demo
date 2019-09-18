@@ -25,6 +25,10 @@ run-without-sasl:
 run-sasl-sha256:
 	go run main.go scram_client.go -brokers $(SASL_BROKER) -username $(USERNAME) -passwd $(PASSWORD) -algorithm sha256 -topic partition-3 -certificate $(CERT) -key $(KEY) -ca ca.pem -mode consume -logmsg -verify -tls -sasl
 
+run-sasl-sha512:
+	go run main.go scram_client.go -brokers $(SASL_BROKER) -username $(USERNAME) -passwd $(PASSWORD) -algorithm sha512 -topic partition-3 -certificate $(CERT) -key $(KEY) -ca ca.pem -mode consume -logmsg -verify -tls -sasl
+
+
 run-sasl-plain:
 	go run main.go scram_client.go -brokers $(SASL_BROKER) -username $(USERNAME) -passwd $(PASSWORD) -algorithm plain -topic partition-3 -certificate $(CERT) -key $(KEY) -ca ./ca.pem -mode consume -logmsg -verify -tls -sasl
 	#go run main.go scram_client.go -brokers $(BROKER) -username avnadmin -passwd jpm5joa17pb5sgwj -algorithm plain -topic partition-3 -certificate ./avnadmin.cert -key ./avnadmin.key -ca ./ca.pem -mode consume -logmsg -verify -tls -sasl
